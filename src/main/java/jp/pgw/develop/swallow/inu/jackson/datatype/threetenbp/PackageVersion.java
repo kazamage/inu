@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.util.VersionUtil;
 public final class PackageVersion implements Versioned {
 
     public final static Version VERSION = VersionUtil.parseVersion(
-        "2.6.0", "com.fasterxml.jackson.datatype", "jackson-datatype-threetenbp"
+        "2.6.0", "jp.pgw.develop.swallow", "inu"
     );
 
     @Override

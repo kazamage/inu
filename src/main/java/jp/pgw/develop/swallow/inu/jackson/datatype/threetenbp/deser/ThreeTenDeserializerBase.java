@@ -22,19 +22,4 @@ abstract class ThreeTenDeserializerBase<T> extends StdScalarDeserializer<T> {
         return deserializer.deserializeTypedFromAny(parser, context);
     }
 
-    /**
-     * Helper method used to peel off spurious wrappings of DateTimeException
-     */
-    protected DateTimeException _peelDTE(DateTimeException e) {
-        while (true) {
-            Throwable t = e.getCause();
-            if (t != null && t instanceof DateTimeException) {
-                e = (DateTimeException) t;
-                continue;
-            }
-            break;
-        }
-        return e;
-    }
-
 }

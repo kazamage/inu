@@ -19,7 +19,6 @@ public class ThreeTenNullKeySerializer extends JsonSerializer<Object> {
         if (value != null) {
             throw new JsonMappingException("ThreeTenNullKeySerializer is only for serializing null values.");
         }
-
         gen.writeFieldName(NULL_KEY);
     }
 

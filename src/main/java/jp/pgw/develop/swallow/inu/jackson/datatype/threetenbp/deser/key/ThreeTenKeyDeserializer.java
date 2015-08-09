@@ -9,11 +9,11 @@ abstract class ThreeTenKeyDeserializer extends KeyDeserializer {
     @Override
     public final Object deserializeKey(String key, DeserializationContext ctxt) {
         if (ThreeTenNullKeySerializer.NULL_KEY.equals(key)) {
-            // potential null key in HashMap
             return null;
         }
         return deserialize(key, ctxt);
     }
 
     protected abstract Object deserialize(String key, DeserializationContext ctxt);
+
 }

@@ -32,50 +32,14 @@ public class LocalDateTimeDeserializer extends ThreeTenDateTimeDeserializerBase<
     
     @Override
     public LocalDateTime deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-    	if (parser.hasTokenId(JsonTokenId.ID_STRING)) {
-            String string = parser.getText().trim();
-            if (string.length() == 0) {
-                return null;
-            }
-            return LocalDateTime.parse(string, _formatter);
-    	}
-    	if (parser.isExpectedStartArrayToken()) {
-    		if(parser.nextToken() == JsonToken.END_ARRAY) {
-    			return null;
-    		}
-            int year = parser.getIntValue();
-
-            parser.nextToken();
-            int month = parser.getIntValue();
-
-            parser.nextToken();
-            int day = parser.getIntValue();
-
-            parser.nextToken();
-            int hour = parser.getIntValue();
-
-            parser.nextToken();
-            int minute = parser.getIntValue();
-
-            if(parser.nextToken() != JsonToken.END_ARRAY) {
-            	int second = parser.getIntValue();
-
-            	if (parser.nextToken() != JsonToken.END_ARRAY) {
-            		int partialSecond = parser.getIntValue();
-            		if(partialSecond < 1_000 &&
-            				!context.isEnabled(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS))
-            			partialSecond *= 1_000_000; // value is milliseconds, convert it to nanoseconds
-
-            		if(parser.nextToken() != JsonToken.END_ARRAY) {
-            			throw context.wrongTokenException(parser, JsonToken.END_ARRAY, "Expected array to end.");
-            		}
-            		return LocalDateTime.of(year, month, day, hour, minute, second, partialSecond);
-            	}
-            	return LocalDateTime.of(year, month, day, hour, minute, second);
-            }
-            return LocalDateTime.of(year, month, day, hour, minute);
-    	}
-        throw context.wrongTokenException(parser, JsonToken.START_ARRAY, "Expected array or string.");
+    	if (!parser.hasTokenId(JsonTokenId.ID_STRING)) {
+            throw context.wrongTokenException(parser, JsonToken.VALUE_STRING, "Expected string.");
+        }
+        final String string = parser.getText().trim();
+        if (string.length() == 0) {
+            return null;
+        }
+        return LocalDateTime.parse(string, formatter);
     }
 
 }

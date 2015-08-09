@@ -31,41 +31,14 @@ public class LocalDateDeserializer extends ThreeTenDateTimeDeserializerBase<Loca
     }
     
     @Override
-    public LocalDate deserialize(JsonParser parser, DeserializationContext context) throws IOException
-    {
-    	if (parser.hasToken(JsonToken.VALUE_STRING)) {
-            String string = parser.getText().trim();
-            if (string.length() == 0) {
-                return null;
-            }
-            // as per [datatype-jsr310#37], only check for optional (and, incorrect...) time marker 'T'
-            // if we are using default formatter
-            DateTimeFormatter format = _formatter;
-            if (format == DEFAULT_FORMATTER) {
-	            if (string.contains("T")) {
-	                return LocalDate.parse(string, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-	            }
-            }
-            return LocalDate.parse(string, format);
-    	}
-    	if (parser.isExpectedStartArrayToken()) {
-    		if (parser.nextToken() == JsonToken.END_ARRAY) {
-    			return null;
-    		}
-            int year = parser.getIntValue();
-
-            parser.nextToken();
-            int month = parser.getIntValue();
-
-            parser.nextToken();
-            int day = parser.getIntValue();
-
-            if (parser.nextToken() != JsonToken.END_ARRAY) {
-                throw context.wrongTokenException(parser, JsonToken.END_ARRAY, "Expected array to end.");
-            }
-            return LocalDate.of(year, month, day);
+    public LocalDate deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    	if (!parser.hasToken(JsonToken.VALUE_STRING)) {
+            throw context.wrongTokenException(parser, JsonToken.VALUE_STRING, "Expected string.");
         }
-
-        throw context.wrongTokenException(parser, JsonToken.START_ARRAY, "Expected array or string.");
+        final String string = parser.getText().trim();
+        if (string.length() == 0) {
+            return null;
+        }
+        return LocalDate.parse(string, formatter);
     }
 }

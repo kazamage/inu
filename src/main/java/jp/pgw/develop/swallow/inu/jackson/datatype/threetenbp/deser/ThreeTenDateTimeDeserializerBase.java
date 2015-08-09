@@ -15,35 +15,37 @@ public abstract class ThreeTenDateTimeDeserializerBase<T>
     extends ThreeTenDeserializerBase<T>
     implements ContextualDeserializer {
 
-    protected final DateTimeFormatter _formatter;
+    protected final DateTimeFormatter formatter;
 
-    protected ThreeTenDateTimeDeserializerBase(Class<T> supportedType, DateTimeFormatter f) {
+    protected ThreeTenDateTimeDeserializerBase(Class<T> supportedType, DateTimeFormatter formatter) {
         super(supportedType);
-        _formatter = f;
+        this.formatter = formatter;
     }
 
-    protected abstract JsonDeserializer<T> withDateFormat(DateTimeFormatter dtf);
+    protected abstract JsonDeserializer<T> withDateFormat(DateTimeFormatter formatter);
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
             BeanProperty property) throws JsonMappingException {
-        if (property != null) {
-            JsonFormat.Value format = ctxt.getAnnotationIntrospector().findFormat((Annotated) property.getMember());
-            if (format != null) {
-                if (format.hasPattern()) {
-                    final String pattern = format.getPattern();
-                    final Locale locale = format.hasLocale() ? format.getLocale() : ctxt.getLocale();
-                    DateTimeFormatter df;
-                    if (locale == null) {
-                        df = DateTimeFormatter.ofPattern(pattern);
-                    } else {
-                        df = DateTimeFormatter.ofPattern(pattern, locale);
-                    }
-                    return withDateFormat(df);
-                }
-                // any use for TimeZone?
-            }
+        if (property == null) {
+            return this;
         }
+        JsonFormat.Value format = ctxt.getAnnotationIntrospector().findFormat((Annotated) property.getMember());
+        if (format == null) {
+            return this;
+        }
+        if (format.hasPattern()) {
+            final String pattern = format.getPattern();
+            final Locale locale = format.hasLocale() ? format.getLocale() : ctxt.getLocale();
+            final DateTimeFormatter dtf;
+            if (locale == null) {
+                dtf = DateTimeFormatter.ofPattern(pattern);
+            } else {
+                dtf = DateTimeFormatter.ofPattern(pattern, locale);
+            }
+            return withDateFormat(dtf);
+        }
+        // any use for TimeZone?
         return this;
    }
 
